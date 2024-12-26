@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "habits_tracker"
+version = "0.0.0"
+description = "A backend for my Habits Tracker project"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = "^5.1.4"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+pytest = "^8.3.4"
+flake8 = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
