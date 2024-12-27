@@ -22,7 +22,7 @@ poetry shell
 
 Alternatively, you can prefix any command with `poetry run`. For instance:
 ```bash
-poetry run python manage.py runserver
+poetry run python main.py
 ```
 
 You can deactivate the virtual environment with:
@@ -36,6 +36,11 @@ Or remove the virtual environment entirely (if needed):
 # # Remove the virtual environment entirely (if needed):
 # poetry env remove python
 ```
+
+> NOTE
+> In the following, `poetry run` is added as prefix to every listed command.
+> It is nevertheless recommended to activate the virtual environment to avoid
+> unintentional pollution of the system python installation.
 
 ### Export dependencies
 
