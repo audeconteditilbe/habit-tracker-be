@@ -19,7 +19,9 @@ class Habit(models.Model):
         ("equal", "Equal to"),
     ]
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="habits"
+    )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     private = models.BooleanField(default=False)
@@ -32,7 +34,9 @@ class Habit(models.Model):
 
 
 class Entry(models.Model):
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name="entries")
+    habit = models.ForeignKey(
+        Habit, on_delete=models.CASCADE, related_name="entries"
+    )
     date = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(
         blank=True,
