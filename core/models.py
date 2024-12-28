@@ -18,9 +18,10 @@ class Habit(models.Model):
         ('equal', 'Equal to'),
     ]
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    private = models.BooleanField(default=False)
     goal_frequency = models.IntegerField()
     goal_unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
     goal_type = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)
@@ -29,8 +30,8 @@ class Habit(models.Model):
         return self.name
 
 class Entry(models.Model):
-    habit_id = models.ForeignKey(Habit, on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='entries')
+    date = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(
         blank=True,
         null=True,
@@ -42,4 +43,4 @@ class Entry(models.Model):
     description = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return f"{self.date}_{self.habit_id}"
+        return f"{self.date}_{self.habit}"
