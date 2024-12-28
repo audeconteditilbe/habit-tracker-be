@@ -2,20 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Habit(models.Model):
     UNIT_CHOICES = [
-        ('day', 'Day'),
-        ('week', 'Week'),
-        ('month', 'Month'),
-        ('year', 'Year'),
+        ("day", "Day"),
+        ("week", "Week"),
+        ("month", "Month"),
+        ("year", "Year"),
     ]
 
     GOAL_TYPE_CHOICES = [
-        ('gt', 'Greater than'),
-        ('gte', 'Greater than or equal to'),
-        ('lt', 'Less than'),
-        ('lte', 'Less than or equal to'),
-        ('equal', 'Equal to'),
+        ("gt", "Greater than"),
+        ("gte", "Greater than or equal to"),
+        ("lt", "Less than"),
+        ("lte", "Less than or equal to"),
+        ("equal", "Equal to"),
     ]
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
@@ -29,8 +30,9 @@ class Habit(models.Model):
     def __str__(self):
         return self.name
 
+
 class Entry(models.Model):
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='entries')
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name="entries")
     date = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(
         blank=True,
@@ -41,6 +43,6 @@ class Entry(models.Model):
         ],
     )
     description = models.TextField(blank=True, null=True)
-    
+
     def __str__(self):
         return f"{self.date}_{self.habit}"

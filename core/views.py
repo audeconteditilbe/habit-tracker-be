@@ -12,10 +12,12 @@ from rest_framework import status
 from .models import Entry, Habit
 from .serializers import EntrySerializer, HabitSerializer, UserSerializer
 
+
 def _list_entries(_request):
     all_entries = Entry.objects.all()
     serialized = EntrySerializer(all_entries, many=True)
     return JsonResponse(serialized.data, safe=False)
+
 
 def _create_entry(request):
     data = JSONParser().parse(request)
@@ -25,13 +27,17 @@ def _create_entry(request):
         return JsonResponse(serialized.data, status=201)
     return JsonResponse(serialized.errors, status=400)
 
+
 """
 Generics
 """
+
+
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
 
 """
 Mixins
@@ -54,6 +60,8 @@ Mixins
 """
 class based views
 """
+
+
 class HabitListCreate(APIView):
     permission_classes = [AllowAny]
 
@@ -61,7 +69,7 @@ class HabitListCreate(APIView):
         habits = Habit.objects.all()
         serializer = HabitSerializer(habits, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request, format=None):
         serializer = HabitSerializer(data=request.data)
         if serializer.is_valid():
@@ -69,9 +77,12 @@ class HabitListCreate(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 """
 function views
 """
+
+
 @csrf_exempt
 def entries_handler(request: HttpRequest):
     if request.method == "GET":
