@@ -3,14 +3,14 @@ from datetime import  datetime, timedelta
 from django.http import Http404
 from django.contrib.auth.models import User
 
-from rest_framework.generics import CreateAPIView, ListCreateAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
-from .types import EntryListQuery, HabitListQuery
+from .types import EntryListQuery, HabitListQuery, UserListQuery
 from .models import Entry, Habit
 from .serializers import EntrySerializer, HabitSerializer, UserSerializer
 
@@ -18,6 +18,35 @@ class CreateUserView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        user = self.get_object(request, pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+class WhoAmIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request):
+        print('\n\n\n', request.user.id, '\n\n\n')
+        try:
+            return User.objects.get(pk=request.user.id)
+        except User.DoesNotExist:
+            raise Http404
+    
+    def get(self, request):
+        user = self.get_object(request)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 class HabitListCreate(ListCreateAPIView):
     serializer_class = HabitSerializer

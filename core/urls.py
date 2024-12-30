@@ -1,12 +1,12 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-from . import views
+from .views import HabitListCreate, HabitDetail, EntryListCreate, EntryDetail
 
 urlpatterns = [
-    path("habits", views.HabitListCreate.as_view(), name="habits"),
-    path("habits/<int:pk>/", views.HabitDetail.as_view(), name="habit-detail"),
-    path("entries", views.EntryListCreate.as_view(), name="entries"),
-    path("entries/<int:pk>", views.EntryDetail.as_view(), name="entry-detail"),
+    path("habits", HabitListCreate.as_view(), name="habits"),
+    path("habits/<int:pk>/", HabitDetail.as_view(), name="habit-detail"),
+    path("entries", EntryListCreate.as_view(), name="entries"),
+    path("entries/<int:pk>", EntryDetail.as_view(), name="entry-detail"),
 ]
 
 # TODO: find out what this does :)
