@@ -1,35 +1,32 @@
+from datetime import  datetime, timedelta
+
 from django.http import Http404
 from django.contrib.auth.models import User
 
-from rest_framework import generics
+from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
+from .types import EntryListQuery, HabitListQuery
 from .models import Entry, Habit
 from .serializers import EntrySerializer, HabitSerializer, UserSerializer
 
-class CreateUserView(generics.CreateAPIView):
+class CreateUserView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-class HabitListCreate(APIView):
-    permission_classes = [IsAuthenticated]
+class HabitListCreate(ListCreateAPIView):
+    serializer_class = HabitSerializer
+    permission_classes = [AllowAny]
 
-    def get(self, request, format=None):
-        habits = Habit.objects.filter(author=request.user)
-        serializer = HabitSerializer(habits, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = HabitSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            # serializer.save(author=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        query: HabitListQuery = self.request.GET
+        author = query.get("userId")
+        return Habit.objects.filter(author=author)
 
 class HabitDetail(APIView):
     permission_classes = [IsAuthenticated]
@@ -58,20 +55,24 @@ class HabitDetail(APIView):
         habit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class EntryListCreate(APIView):
-    permission_classes = [IsAuthenticated]
+class EntryListCreate(ListCreateAPIView):
+    serializer_class = EntrySerializer
+    permission_classes = [AllowAny]
 
-    def get(self, request, format=None):
-        entries = Entry.objects.all()
-        serializer = EntrySerializer(entries, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        query: EntryListQuery = self.request.GET
+        
+        habitId = query.get("habitId")        
+        
+        end = query.get("time_end")
+        end = datetime.fromisoformat(end) if end else datetime.now()
+        
+        start = query.get("time_start")
+        start = datetime.fromisoformat(start) if start else (end - timedelta(days=7))
 
-    def post(self, request, format=None):
-        serializer = EntrySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Entry.objects\
+            .filter(habit=habitId)\
+            .filter(date__date__range=(start, end))
 
 class EntryDetail(APIView):
     permission_classes = [IsAuthenticated]
