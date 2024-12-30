@@ -19,12 +19,19 @@ class Habit(models.Model):
         ("equal", "Equal to"),
     ]
 
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('paused', 'Paused'),
+        ('deleted', 'Deleted'),
+    ]
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="habits"
     )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     private = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, default='active', choices=STATUS_CHOICES)
     goal_frequency = models.IntegerField()
     goal_unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
     goal_type = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)

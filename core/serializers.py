@@ -18,13 +18,14 @@ class HabitSerializer(serializers.ModelSerializer):
         model = Habit
         fields = [
             "id",
+            "author",
             "name",
             "description",
             "private",
+            "status",
             "goal_frequency",
             "goal_unit",
             "goal_type",
-            "author",
         ]
         # uncomment once author will be automatically set to current user
         # extra_kwargs = { "author": { "read_only": True } }

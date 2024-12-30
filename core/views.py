@@ -21,7 +21,7 @@ class CreateUserView(CreateAPIView):
 
 class HabitListCreate(ListCreateAPIView):
     serializer_class = HabitSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         query: HabitListQuery = self.request.GET
@@ -57,7 +57,7 @@ class HabitDetail(APIView):
 
 class EntryListCreate(ListCreateAPIView):
     serializer_class = EntrySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         query: EntryListQuery = self.request.GET
