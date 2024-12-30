@@ -3,14 +3,15 @@ from datetime import  datetime, timedelta
 from django.http import Http404
 from django.contrib.auth.models import User
 
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
 
-from .types import EntryListQuery, HabitListQuery, UserListQuery
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+
+from .types import EntryListQuery, HabitListQuery
 from .models import Entry, Habit
 from .serializers import EntrySerializer, HabitSerializer, UserSerializer
 
@@ -37,7 +38,6 @@ class WhoAmIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self, request):
-        print('\n\n\n', request.user.id, '\n\n\n')
         try:
             return User.objects.get(pk=request.user.id)
         except User.DoesNotExist:
@@ -48,11 +48,29 @@ class WhoAmIView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="userId",
+                description="Filter habits by the author's user ID.",
+                required=False,
+                type=str,
+            )
+        ],
+        description="Retrieve a list of habits.",
+    ),
+    post=extend_schema(
+        description="Create a new habit.",
+    ),
+)
 class HabitListCreate(ListCreateAPIView):
     serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.method != "GET":
+            return Habit.objects.all() 
         query: HabitListQuery = self.request.GET
         author = query.get("userId")
         return Habit.objects.filter(author=author)
@@ -84,14 +102,48 @@ class HabitDetail(APIView):
         habit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="habitId",
+                description="Filter entries by the habit ID",
+                required=True,
+                type=str,
+            ),
+            OpenApiParameter(
+                name="time_start",
+                description="Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `time_end`.",
+                required=False,
+                type=str,
+            ),
+            OpenApiParameter(
+                name="time_end",
+                description="End date for filtering entries in ISO 8601 format. Defaults to the current time.",
+                required=False,
+                type=str,
+            ),
+        ],
+        description="Retrieve a list of entries filtered by habit and date range.",
+    ),
+    post=extend_schema(
+        description="Create a new entry for a habit.",
+    ),
+)
 class EntryListCreate(ListCreateAPIView):
     serializer_class = EntrySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.method != "GET":
+            return Entry.objects.all()
+        
         query: EntryListQuery = self.request.GET
         
-        habitId = query.get("habitId")        
+        habitId = query.get("habitId")
+
+        if (not habitId):
+            raise Http404
         
         end = query.get("time_end")
         end = datetime.fromisoformat(end) if end else datetime.now()

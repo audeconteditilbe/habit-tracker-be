@@ -1,4 +1,4 @@
-from typing import Optional, TypedDict, Union
+from typing import Optional, TypedDict
 
 class HabitListQuery(TypedDict):
     userId: Optional[str]

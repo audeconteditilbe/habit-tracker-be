@@ -1,4 +1,3 @@
-
 ## Setup
 
 This project uses Python 3.13, and manages dependencies via `pyproject.toml`.
@@ -50,6 +49,10 @@ You can export the dependency list into a `requirements.txt` file with:
 poetry export -f requirements.txt --output requirements.txt
 ```
 
+## OpenAPI Schema
+
+OpenAPI v3 schema is available at `schemas/core.openapi.yml`.
+
 ## Development
 
 You can start the local development server with:
@@ -68,6 +71,17 @@ and linting with:
 
 ```bash
 poetry run flake8 .
+```
+
+### Schema
+
+[drf-spectacular](https://drf-spectacular.readthedocs.io/en/latest/readme.html)
+is used to generate the API Schema. Upon updating the API, please make sure to
+[annotate views](https://drf-spectacular.readthedocs.io/en/latest/readme.html#usage)
+if needed, and regenerate the schema by running:
+
+```bash
+python manage.py spectacular --color --file schemas/core.openapi.yml
 ```
 
 ### VS Code setup
