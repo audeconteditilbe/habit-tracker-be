@@ -4,13 +4,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Habit(models.Model):
-    UNIT_CHOICES = [
-        ("day", "Day"),
-        ("week", "Week"),
-        ("month", "Month"),
-        ("year", "Year"),
-    ]
-
     GOAL_TYPE_CHOICES = [
         ("gt", "Greater than"),
         ("gte", "Greater than or equal to"),
@@ -33,7 +26,7 @@ class Habit(models.Model):
     private = models.BooleanField(default=False)
     status = models.CharField(max_length=10, default='active', choices=STATUS_CHOICES)
     goal_frequency = models.IntegerField()
-    goal_unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
+    goal_timespan = models.IntegerField(validators=[MinValueValidator(0)])
     goal_type = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)
 
     def __str__(self):

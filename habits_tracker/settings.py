@@ -63,7 +63,10 @@ INSTALLED_APPS = [
     "core",
     "rest_framework",
     "corsheaders",
+    # OpenApi annotations
     "drf_spectacular",
+    # Graph Ql
+    "graphene_django"
 ]
 
 MIDDLEWARE = [
@@ -161,5 +164,10 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Small projects for tracking habits',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
+}
+
+# GraphQL
+# https://docs.graphene-python.org/projects/django/en/latest/installation/
+GRAPHENE = {
+    "SCHEMA": "core.schema.schema"
 }

@@ -12,7 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
-
 class HabitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
@@ -24,12 +23,9 @@ class HabitSerializer(serializers.ModelSerializer):
             "private",
             "status",
             "goal_frequency",
-            "goal_unit",
+            "goal_timespan",
             "goal_type",
         ]
-        # uncomment once author will be automatically set to current user
-        # extra_kwargs = { "author": { "read_only": True } }
-
 
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
