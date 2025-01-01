@@ -218,22 +218,20 @@ paths:
   /api/token/:
     post:
       operationId: token_create
-      description: |-
-        Takes a set of user credentials and returns an access and refresh JSON web
-        token pair to prove the authentication of those credentials.
+      description: Retrieve the token.
       tags:
       - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
         required: true
       responses:
         '200':
@@ -245,22 +243,20 @@ paths:
   /api/token/refresh/:
     post:
       operationId: token_refresh_create
-      description: |-
-        Takes a refresh type JSON web token and returns an access type JSON web
-        token if the refresh token is valid.
+      description: Retrieve a new access token.
       tags:
       - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
         required: true
       responses:
         '200':
@@ -278,13 +274,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
         required: true
       security:
       - jwtAuth: []
@@ -294,7 +290,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/CreateUser'
           description: ''
   /api/users/{id}/:
     get:
@@ -324,6 +320,26 @@ paths:
           description: No response body
 components:
   schemas:
+    CreateUser:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - password
+      - username
     Entry:
       type: object
       properties:
@@ -487,26 +503,26 @@ components:
       required:
       - access
       - refresh
-    User:
+    WrapperTokenObtainPair:
       type: object
       properties:
-        id:
-          type: integer
-          readOnly: true
         username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
+          maxLength: 255
         password:
           type: string
-          writeOnly: true
-          maxLength: 128
+          maxLength: 255
       required:
-      - id
       - password
       - username
+    WrapperTokenRefresh:
+      type: object
+      properties:
+        refresh:
+          type: string
+          maxLength: 255
+      required:
+      - refresh
   securitySchemes:
     jwtAuth:
       type: http

@@ -17,11 +17,11 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 
 from .types import EntryListQuery, HabitListQuery
 from .models import Entry, Habit
-from .serializers import EntrySerializer, HabitSerializer, UserSerializer
+from .serializers import CreateUserSerializer, EntrySerializer, HabitSerializer, UserSerializer
 
 class CreateUserView(CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = CreateUserSerializer
     permission_classes = [AllowAny]
 
 class UserDetailView(APIView):
@@ -186,7 +186,8 @@ class EntryDetail(APIView):
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# Recycle DRF simple JWT auth for Graphene-Django
+# Wrapper for GraphQLView to enforce authentication
+# through recycling of DRF simple JWT auth
 # https://github.com/graphql-python/graphene/issues/249
 def summary_view():
     view = GraphQLView.as_view()
