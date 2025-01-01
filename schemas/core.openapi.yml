@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Habit tracker
-  version: 1.0.0
+  version: 0.0.1
   description: Small projects for tracking habits
 paths:
   /api/entries:
@@ -362,18 +362,6 @@ components:
         * `lt` - Less than
         * `lte` - Less than or equal to
         * `equal` - Equal to
-    GoalUnitEnum:
-      enum:
-      - day
-      - week
-      - month
-      - year
-      type: string
-      description: |-
-        * `day` - Day
-        * `week` - Week
-        * `month` - Month
-        * `year` - Year
     Habit:
       type: object
       properties:
@@ -397,15 +385,18 @@ components:
           maximum: 9223372036854775807
           minimum: -9223372036854775808
           format: int64
-        goal_unit:
-          $ref: '#/components/schemas/GoalUnitEnum'
+        goal_timespan:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         goal_type:
           $ref: '#/components/schemas/GoalTypeEnum'
       required:
       - author
       - goal_frequency
+      - goal_timespan
       - goal_type
-      - goal_unit
       - id
       - name
     PaginatedEntryList:

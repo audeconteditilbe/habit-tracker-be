@@ -162,8 +162,9 @@ CORS_ALLOWS_CREDENTIALS = True
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Habit tracker',
     'DESCRIPTION': 'Small projects for tracking habits',
-    'VERSION': '1.0.0',
+    'VERSION': '0.0.1',
     'SERVE_INCLUDE_SCHEMA': False,
+    'PREPROCESSING_HOOKS': ["core.openapi.custom_preprocessing_hook"]
 }
 
 # GraphQL

@@ -8,6 +8,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes, api_view
+
+from graphene_django.views import GraphQLView
 
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
@@ -181,3 +185,12 @@ class EntryDetail(APIView):
         entry = self.get_object(pk)
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Recycle DRF simple JWT auth for Graphene-Django
+# https://github.com/graphql-python/graphene/issues/249
+def summary_view():
+    view = GraphQLView.as_view()
+    view = permission_classes((IsAuthenticated,))(view)
+    # view = authentication_classes((TokenAuthentication,))(view)
+    view = api_view(['GET', 'POST'])(view)
+    return view
