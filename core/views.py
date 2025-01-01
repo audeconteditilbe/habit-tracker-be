@@ -116,13 +116,13 @@ class HabitDetail(APIView):
                 type=str,
             ),
             OpenApiParameter(
-                name="time_start",
-                description="Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `time_end`.",
+                name="timeStart",
+                description="Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `timeEnd`.",
                 required=False,
                 type=str,
             ),
             OpenApiParameter(
-                name="time_end",
+                name="timeEnd",
                 description="End date for filtering entries in ISO 8601 format. Defaults to the current time.",
                 required=False,
                 type=str,
@@ -149,10 +149,10 @@ class EntryListCreate(ListCreateAPIView):
         if (not habitId):
             raise Http404
         
-        end = query.get("time_end")
+        end = query.get("timeEnd")
         end = datetime.fromisoformat(end) if end else datetime.now()
         
-        start = query.get("time_start")
+        start = query.get("timeStart")
         start = datetime.fromisoformat(start) if start else (end - timedelta(days=7))
 
         return Entry.objects\

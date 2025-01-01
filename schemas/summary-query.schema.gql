@@ -27,9 +27,9 @@ type Habit {
   description: String
   private: Boolean!
   status: Status!
-  goal_frequency: Int!
-  goal_timespan: Int!
-  goal_type: GoalType!
+  goalFrequency: Int!
+  goalTimespan: Int!
+  goalType: GoalType!
   entries(span: Int): [Entry!]!
 }
 

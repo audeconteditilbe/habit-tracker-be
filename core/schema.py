@@ -17,16 +17,16 @@ class HabitType(DjangoObjectType):
             "description",
             "private",
             "status",
-            "goal_frequency",
-            "goal_timespan",
-            "goal_type",
+            "goalFrequency",
+            "goalTimespan",
+            "goalType",
         )
 
     entries = graphene.List(EntryType, span=graphene.Int(required=False))
 
     def resolve_entries(self: Habit, info, span = None):
         if not span or span <= 0:
-            span = self.goal_timespan if self.goal_timespan > 0 else 7
+            span = self.goalTimespan if self.goalTimespan > 0 else 7
         
         return Entry.objects.filter(habit=self).order_by('-date')[:span]
 

@@ -22,9 +22,9 @@ class HabitSerializer(serializers.ModelSerializer):
             "description",
             "private",
             "status",
-            "goal_frequency",
-            "goal_timespan",
-            "goal_type",
+            "goalFrequency",
+            "goalTimespan",
+            "goalType",
         ]
 
 class EntrySerializer(serializers.ModelSerializer):

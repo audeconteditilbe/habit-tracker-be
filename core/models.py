@@ -25,9 +25,9 @@ class Habit(models.Model):
     description = models.TextField(blank=True, null=True)
     private = models.BooleanField(default=False)
     status = models.CharField(max_length=10, default='active', choices=STATUS_CHOICES)
-    goal_frequency = models.IntegerField()
-    goal_timespan = models.IntegerField(validators=[MinValueValidator(0)])
-    goal_type = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)
+    goalFrequency = models.IntegerField()
+    goalTimespan = models.IntegerField(validators=[MinValueValidator(0)])
+    goalType = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)
 
     def __str__(self):
         return self.name

@@ -22,17 +22,17 @@ paths:
         schema:
           type: integer
       - in: query
-        name: time_end
+        name: timeEnd
         schema:
           type: string
         description: End date for filtering entries in ISO 8601 format. Defaults to
           the current time.
       - in: query
-        name: time_start
+        name: timeStart
         schema:
           type: string
         description: Start date for filtering entries in ISO 8601 format. Defaults
-          to 7 days before `time_end`.
+          to 7 days before `timeEnd`.
       tags:
       - entries
       security:
@@ -380,23 +380,23 @@ components:
           type: boolean
         status:
           $ref: '#/components/schemas/StatusEnum'
-        goal_frequency:
+        goalFrequency:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808
           format: int64
-        goal_timespan:
+        goalTimespan:
           type: integer
           maximum: 9223372036854775807
           minimum: 0
           format: int64
-        goal_type:
+        goalType:
           $ref: '#/components/schemas/GoalTypeEnum'
       required:
       - author
-      - goal_frequency
-      - goal_timespan
-      - goal_type
+      - goalFrequency
+      - goalTimespan
+      - goalType
       - id
       - name
     PaginatedEntryList:
