@@ -7,7 +7,7 @@ paths:
   /api/entries:
     get:
       operationId: entries_list
-      description: Retrieve a list of entries filtered by habit and date range.
+      description: Retrieve entries filtered by habit and date range.
       parameters:
       - in: query
         name: habitId
@@ -25,14 +25,14 @@ paths:
         name: timeEnd
         schema:
           type: string
-        description: End date for filtering entries in ISO 8601 format. Defaults to
-          the current time.
+        description: End date for filtering entries in ISO format. Defaults to the
+          current time.
       - in: query
         name: timeStart
         schema:
           type: string
-        description: Start date for filtering entries in ISO 8601 format. Defaults
-          to 7 days before `timeEnd`.
+        description: Start date for filtering entries in ISO format. Defaults to 7
+          days before `timeEnd`.
       tags:
       - entries
       security:
