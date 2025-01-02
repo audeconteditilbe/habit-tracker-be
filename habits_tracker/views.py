@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
 # Wrapper to override default OpenAPI schema
 
+
 class WrapperTokenRefreshSerializer(serializers.Serializer):
     refresh = serializers.CharField(max_length=255)
+
 
 @extend_schema_view(
     post=extend_schema(
@@ -16,9 +18,11 @@ class WrapperTokenRefreshSerializer(serializers.Serializer):
 class WrapperTokenRefreshView(TokenRefreshView):
     pass
 
+
 class WrapperTokenObtainPairSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
+
 
 @extend_schema_view(
     post=extend_schema(
@@ -28,4 +32,3 @@ class WrapperTokenObtainPairSerializer(serializers.Serializer):
 )
 class WrapperTokenObtainPairView(TokenObtainPairView):
     pass
-

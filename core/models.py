@@ -13,18 +13,16 @@ class Habit(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('paused', 'Paused'),
-        ('deleted', 'Deleted'),
+        ("active", "Active"),
+        ("paused", "Paused"),
+        ("deleted", "Deleted"),
     ]
 
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="habits"
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     private = models.BooleanField(default=False)
-    status = models.CharField(max_length=10, default='active', choices=STATUS_CHOICES)
+    status = models.CharField(max_length=10, default="active", choices=STATUS_CHOICES)
     goalFrequency = models.IntegerField()
     goalTimespan = models.IntegerField(validators=[MinValueValidator(0)])
     goalType = models.CharField(max_length=10, choices=GOAL_TYPE_CHOICES)
@@ -34,9 +32,7 @@ class Habit(models.Model):
 
 
 class Entry(models.Model):
-    habit = models.ForeignKey(
-        Habit, on_delete=models.CASCADE, related_name="entries"
-    )
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name="entries")
     date = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(
         blank=True,

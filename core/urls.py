@@ -1,7 +1,13 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from graphene_django.views import GraphQLView
-from .views import HabitListCreate, HabitDetail, EntryListCreate, EntryDetail, summary_view
+from .views import (
+    HabitListCreate,
+    HabitDetail,
+    EntryListCreate,
+    EntryDetail,
+    summary_view,
+)
 
 urlpatterns = [
     path("habits", HabitListCreate.as_view(), name="habits"),
