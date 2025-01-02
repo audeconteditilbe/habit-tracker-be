@@ -2,14 +2,17 @@
 
 Small Django backend to track habits. Based on:
 
-- Django Rest Framework (`djangorestframework`)
-- Graphene-Django (`graphene-django`).
+- [Django Rest Framework](https://www.django-rest-framework.org/)
+- [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/).
   > ⚠️ Note ⚠️
-  > As recommended in [their documentation](#https://docs.graphene-python.org/projects/django/en/latest/installation/#id1),
+  >
+  > As recommended in [the documentation](#https://docs.graphene-python.org/projects/django/en/latest/installation/#id1),
   > Graphene-Django is pinned to a specific version (3.2.2).
 
-The data-schema constitutes of 3 tables: `User`, `Habit`, `Entry`.
+The data-schema is constituted of 3 tables: `User`, `Habit`, `Entry`.
 Each row of `Entry` is linked to an `Habit`, which is linked to a `User`. 
+
+The server is configured to connect to a PostgresDb instance.
 
 A Rest API is provided for basic CRUD operations, while a GraphQL API is
 available to retrieve aggregated data.
@@ -74,9 +77,19 @@ OpenAPI v3 schema is available at `schemas/core.openapi.yml`.
 
 ## Development & housekeeping
 
-You can start the local development server with:
+A local docker image of Postgres can be run with:
+```bash
+docker compose up -d
+```
+
+after which, you can start the local development server with:
 ```bash
 poetry run python manage.py runserver
+```
+
+Run the following command to tear down the Postgres instance:
+```bash
+docker compose down
 ```
 
 ### Code formatting / linting
