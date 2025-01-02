@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
@@ -40,10 +39,10 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     # Schema generation
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     # Pagination
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
 }
 
 SIMPLE_JWT = {
@@ -63,7 +62,10 @@ INSTALLED_APPS = [
     "core",
     "rest_framework",
     "corsheaders",
+    # OpenApi annotations
     "drf_spectacular",
+    # Graph Ql
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -114,7 +116,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa: E501
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -157,9 +159,13 @@ CORS_ALLOWS_CREDENTIALS = True
 # Schema generation settings
 # https://drf-spectacular.readthedocs.io/en/latest/readme.html
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Habit tracker',
-    'DESCRIPTION': 'Small projects for tracking habits',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
+    "TITLE": "Habit tracker",
+    "DESCRIPTION": "Small projects for tracking habits",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "PREPROCESSING_HOOKS": ["core.openapi.custom_preprocessing_hook"],
 }
+
+# GraphQL
+# https://docs.graphene-python.org/projects/django/en/latest/installation/
+GRAPHENE = {"SCHEMA": "core.schema.schema"}

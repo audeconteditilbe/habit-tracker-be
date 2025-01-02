@@ -1,3 +1,23 @@
+# Habit tracker
+
+Small Django backend to track habits. Based on:
+
+- Django Rest Framework (`djangorestframework`)
+- Graphene-Django (`graphene-django`).
+  > ⚠️ Note ⚠️
+  > As recommended in [their documentation](#https://docs.graphene-python.org/projects/django/en/latest/installation/#id1),
+  > Graphene-Django is pinned to a specific version (3.2.2).
+
+The data-schema constitutes of 3 tables: `User`, `Habit`, `Entry`.
+Each row of `Entry` is linked to an `Habit`, which is linked to a `User`. 
+
+A Rest API is provided for basic CRUD operations, while a GraphQL API is
+available to retrieve aggregated data.
+
+- Is GraphQL overkill for this project? Yes.
+- Do I care? No.
+- How about getting rid of the Rest API then? Meh.
+
 ## Setup
 
 This project uses Python 3.13, and manages dependencies via `pyproject.toml`.
@@ -15,29 +35,28 @@ poetry install
 
 Activate the virtual environment with:
 ```bash
-# Activate virtual environment
 poetry shell
 ```
 
 Alternatively, you can prefix any command with `poetry run`. For instance:
 ```bash
-poetry run python main.py
+poetry run python manage.py runserver
 ```
 
 You can deactivate the virtual environment with:
 ```bash
-# Deactivate virtual env
 exit
 ```
 
 Or remove the virtual environment entirely (if needed):
 ```bash
-# # Remove the virtual environment entirely (if needed):
+# Commented for safety
 # poetry env remove python
 ```
 
 > NOTE
-> In the following, `poetry run` is added as prefix to every listed command.
+>
+> In the following, `poetry run` is added as prefix to every command.
 > It is nevertheless recommended to activate the virtual environment to avoid
 > unintentional pollution of the system python installation.
 
@@ -53,7 +72,7 @@ poetry export -f requirements.txt --output requirements.txt
 
 OpenAPI v3 schema is available at `schemas/core.openapi.yml`.
 
-## Development
+## Development & housekeeping
 
 You can start the local development server with:
 ```bash
@@ -67,8 +86,7 @@ You can format code by running:
 poetry run black .
 ```
 
-and linting with:
-
+and check for linting errors with:
 ```bash
 poetry run flake8 .
 ```

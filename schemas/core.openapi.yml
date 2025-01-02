@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Habit tracker
-  version: 1.0.0
+  version: 0.0.1
   description: Small projects for tracking habits
 paths:
   /api/entries:
@@ -22,17 +22,17 @@ paths:
         schema:
           type: integer
       - in: query
-        name: time_end
+        name: timeEnd
         schema:
           type: string
         description: End date for filtering entries in ISO 8601 format. Defaults to
           the current time.
       - in: query
-        name: time_start
+        name: timeStart
         schema:
           type: string
         description: Start date for filtering entries in ISO 8601 format. Defaults
-          to 7 days before `time_end`.
+          to 7 days before `timeEnd`.
       tags:
       - entries
       security:
@@ -218,22 +218,20 @@ paths:
   /api/token/:
     post:
       operationId: token_create
-      description: |-
-        Takes a set of user credentials and returns an access and refresh JSON web
-        token pair to prove the authentication of those credentials.
+      description: Retrieve the token.
       tags:
       - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/WrapperTokenObtainPair'
         required: true
       responses:
         '200':
@@ -245,22 +243,20 @@ paths:
   /api/token/refresh/:
     post:
       operationId: token_refresh_create
-      description: |-
-        Takes a refresh type JSON web token and returns an access type JSON web
-        token if the refresh token is valid.
+      description: Retrieve a new access token.
       tags:
       - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/WrapperTokenRefresh'
         required: true
       responses:
         '200':
@@ -278,13 +274,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUser'
         required: true
       security:
       - jwtAuth: []
@@ -294,7 +290,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/CreateUser'
           description: ''
   /api/users/{id}/:
     get:
@@ -324,6 +320,26 @@ paths:
           description: No response body
 components:
   schemas:
+    CreateUser:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - password
+      - username
     Entry:
       type: object
       properties:
@@ -362,18 +378,6 @@ components:
         * `lt` - Less than
         * `lte` - Less than or equal to
         * `equal` - Equal to
-    GoalUnitEnum:
-      enum:
-      - day
-      - week
-      - month
-      - year
-      type: string
-      description: |-
-        * `day` - Day
-        * `week` - Week
-        * `month` - Month
-        * `year` - Year
     Habit:
       type: object
       properties:
@@ -392,20 +396,23 @@ components:
           type: boolean
         status:
           $ref: '#/components/schemas/StatusEnum'
-        goal_frequency:
+        goalFrequency:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808
           format: int64
-        goal_unit:
-          $ref: '#/components/schemas/GoalUnitEnum'
-        goal_type:
+        goalTimespan:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        goalType:
           $ref: '#/components/schemas/GoalTypeEnum'
       required:
       - author
-      - goal_frequency
-      - goal_type
-      - goal_unit
+      - goalFrequency
+      - goalTimespan
+      - goalType
       - id
       - name
     PaginatedEntryList:
@@ -496,26 +503,26 @@ components:
       required:
       - access
       - refresh
-    User:
+    WrapperTokenObtainPair:
       type: object
       properties:
-        id:
-          type: integer
-          readOnly: true
         username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
+          maxLength: 255
         password:
           type: string
-          writeOnly: true
-          maxLength: 128
+          maxLength: 255
       required:
-      - id
       - password
       - username
+    WrapperTokenRefresh:
+      type: object
+      properties:
+        refresh:
+          type: string
+          maxLength: 255
+      required:
+      - refresh
   securitySchemes:
     jwtAuth:
       type: http

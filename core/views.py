@@ -1,4 +1,4 @@
-from datetime import  datetime, timedelta
+from datetime import datetime, timedelta
 
 from django.http import Http404
 from django.contrib.auth.models import User
@@ -8,17 +8,27 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import permission_classes, api_view
+
+from graphene_django.views import GraphQLView
 
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
 from .types import EntryListQuery, HabitListQuery
 from .models import Entry, Habit
-from .serializers import EntrySerializer, HabitSerializer, UserSerializer
+from .serializers import (
+    CreateUserSerializer,
+    EntrySerializer,
+    HabitSerializer,
+    UserSerializer,
+)
+
 
 class CreateUserView(CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = CreateUserSerializer
     permission_classes = [AllowAny]
+
 
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -28,11 +38,12 @@ class UserDetailView(APIView):
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise Http404
-    
+
     def get(self, request, pk, format=None):
         user = self.get_object(request, pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 class WhoAmIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -42,11 +53,12 @@ class WhoAmIView(APIView):
             return User.objects.get(pk=request.user.id)
         except User.DoesNotExist:
             raise Http404
-    
+
     def get(self, request):
         user = self.get_object(request)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 @extend_schema_view(
     get=extend_schema(
@@ -70,10 +82,11 @@ class HabitListCreate(ListCreateAPIView):
 
     def get_queryset(self):
         if self.request.method != "GET":
-            return Habit.objects.all() 
+            return Habit.objects.all()
         query: HabitListQuery = self.request.GET
         author = query.get("userId")
         return Habit.objects.filter(author=author)
+
 
 class HabitDetail(APIView):
     permission_classes = [IsAuthenticated]
@@ -102,6 +115,7 @@ class HabitDetail(APIView):
         habit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @extend_schema_view(
     get=extend_schema(
         parameters=[
@@ -112,19 +126,21 @@ class HabitDetail(APIView):
                 type=str,
             ),
             OpenApiParameter(
-                name="time_start",
-                description="Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `time_end`.",
+                name="timeStart",
+                description="Start date for filtering entries in ISO format."
+                + " Defaults to 7 days before `timeEnd`.",
                 required=False,
                 type=str,
             ),
             OpenApiParameter(
-                name="time_end",
-                description="End date for filtering entries in ISO 8601 format. Defaults to the current time.",
+                name="timeEnd",
+                description="End date for filtering entries in ISO format."
+                + " Defaults to the current time.",
                 required=False,
                 type=str,
             ),
         ],
-        description="Retrieve a list of entries filtered by habit and date range.",
+        description="Retrieve entries filtered by habit and date range.",
     ),
     post=extend_schema(
         description="Create a new entry for a habit.",
@@ -137,23 +153,24 @@ class EntryListCreate(ListCreateAPIView):
     def get_queryset(self):
         if self.request.method != "GET":
             return Entry.objects.all()
-        
+
         query: EntryListQuery = self.request.GET
-        
+
         habitId = query.get("habitId")
 
-        if (not habitId):
+        if not habitId:
             raise Http404
-        
-        end = query.get("time_end")
+
+        end = query.get("timeEnd")
         end = datetime.fromisoformat(end) if end else datetime.now()
-        
-        start = query.get("time_start")
+
+        start = query.get("timeStart")
         start = datetime.fromisoformat(start) if start else (end - timedelta(days=7))
 
-        return Entry.objects\
-            .filter(habit=habitId)\
-            .filter(date__date__range=(start, end))
+        return Entry.objects.filter(habit=habitId).filter(
+            date__date__range=(start, end)
+        )
+
 
 class EntryDetail(APIView):
     permission_classes = [IsAuthenticated]
@@ -181,3 +198,14 @@ class EntryDetail(APIView):
         entry = self.get_object(pk)
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Wrapper for GraphQLView to enforce authentication
+# through recycling of DRF simple JWT auth
+# https://github.com/graphql-python/graphene/issues/249
+def summary_view():
+    view = GraphQLView.as_view()
+    view = permission_classes((IsAuthenticated,))(view)
+    # view = authentication_classes((TokenAuthentication,))(view)
+    view = api_view(["GET", "POST"])(view)
+    return view

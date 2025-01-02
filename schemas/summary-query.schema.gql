@@ -1,0 +1,38 @@
+enum Status {
+  active
+  paused
+  deleted
+}
+
+enum GoalType {
+  gt
+  gte
+  lt
+  lte
+  equal
+}
+
+type Entry {
+  id: ID!
+  habit: Habit!
+  date: String!
+  rating: Int
+  description: String
+}
+
+type Habit {
+  id: ID!
+  author: Int!
+  name: String!
+  description: String
+  private: Boolean!
+  status: Status!
+  goalFrequency: Int!
+  goalTimespan: Int!
+  goalType: GoalType!
+  entries(span: Int): [Entry!]!
+}
+
+type Query {
+  habits(author: Int!): [Habit!]!
+}

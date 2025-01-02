@@ -6,8 +6,17 @@ from .models import Entry, Habit
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "password"]
+        fields = ["id", "username", "email", "password"]
         extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "email", "password"]
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -23,12 +32,10 @@ class HabitSerializer(serializers.ModelSerializer):
             "description",
             "private",
             "status",
-            "goal_frequency",
-            "goal_unit",
-            "goal_type",
+            "goalFrequency",
+            "goalTimespan",
+            "goalType",
         ]
-        # uncomment once author will be automatically set to current user
-        # extra_kwargs = { "author": { "read_only": True } }
 
 
 class EntrySerializer(serializers.ModelSerializer):
