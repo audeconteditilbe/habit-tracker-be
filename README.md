@@ -70,6 +70,10 @@ You can export the dependency list into a `requirements.txt` file with:
 # Generate `requirements.txt` form poetry
 poetry export -f requirements.txt --output requirements.txt
 ```
+or
+```bash
+pip freeze > requirements.txt
+```
 
 ## OpenAPI Schema
 
