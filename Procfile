@@ -1,0 +1,1 @@
+web: gunicorn habits_tracker.wsgi
