@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+ENVIRONMENT = os.environ.get('ENVIRONMENT', default='production')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,10 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-&eo4d$v@m@ssh%g41eex&jpie_43=13)=&kmb-b0oyl2yctcaa"
+secret_key = os.environ.get('SECRET_KEY')
+SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENVIRONMENT == 'development'
 
 # List of all the host/domain names our Django project can serve
 ALLOWED_HOSTS = ["*"]
