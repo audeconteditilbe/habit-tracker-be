@@ -34,7 +34,16 @@ SECRET_KEY = secret_key
 DEBUG = ENVIRONMENT == "development"
 
 # List of all the host/domain names our Django project can serve
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "habit-tracker-be-production.up.railway.app"
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://habit-tracker-be-production.up.railway.app"
+]
+
+# Rest framework
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
