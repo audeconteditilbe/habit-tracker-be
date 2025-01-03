@@ -4,7 +4,7 @@ services:
     container_name: postgres_db
     environment:
       POSTGRES_USER: django_user
-      POSTGRES_PASSWORD: $DB_DEFAULT_PASSWORD
+      POSTGRES_PASSWORD: $PGPASSWORD
       POSTGRES_DB: django_db
     ports:
       - "5432:5432"

@@ -122,24 +122,30 @@ WSGI_APPLICATION = "habits_tracker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-default_password = os.environ.get("DB_DEFAULT_PASSWORD")
+import dj_database_url
+
+db_url = os.environ.get("DATABASE_URL")
 
 os.environ.setdefault("PGDATABASE", "django_db")
 os.environ.setdefault("PGUSER", "django_user")
-os.environ.setdefault("PGPASSWORD", default_password)
 os.environ.setdefault("PGHOST", "localhost")
 os.environ.setdefault("PGPORT", "5432")
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["PGDATABASE"],
-        "USER": os.environ["PGUSER"],
-        "PASSWORD": os.environ["PGPASSWORD"],
-        "HOST": os.environ["PGHOST"],
-        "PORT": os.environ["PGPORT"],
+if db_url:
+    DATABASES = {
+        "default": dj_database_url.config(default=db_url),
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("PGDATABASE"),
+            "USER": os.environ.get("PGUSER"),
+            "PASSWORD": os.environ.get("PGPASSWORD"),
+            "HOST": os.environ.get("PGHOST"),
+            "PORT": os.environ.get("PGPORT"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
