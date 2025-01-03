@@ -467,6 +467,7 @@ files = [
 [package.dependencies]
 psycopg-binary = {version = "3.2.3", optional = true, markers = "implementation_name != \"pypy\" and extra == \"binary\""}
 psycopg-pool = {version = "*", optional = true, markers = "extra == \"pool\""}
+typing-extensions = {version = ">=4.6", markers = "python_version < \"3.13\""}
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
@@ -1002,5 +1003,5 @@ brotli = ["brotli"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.13"
-content-hash = "f5f785f6d11fe35cffd9cf3f4ea8bec753797de02f3d2779711d30f6a15f0508"
+python-versions = "^3.11"
+content-hash = "1a7ff6c7e2d7f0e5553233dfce59260d88147c3596260a4cc08f68486472c900"
