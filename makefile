@@ -1,3 +1,7 @@
+start-db:
+	docker compose up -d --build
+stop-db:
+	docker compose down
 dev:
 	poetry run python manage.py runserver
 migrate:
