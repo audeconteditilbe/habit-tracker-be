@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Literal
 
 from django.http import Http404
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -14,8 +16,10 @@ from graphene_django.views import GraphQLView
 
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
+from core.utils import days_ago
+
 from .types import EntryListQuery, HabitListQuery
-from .models import Entry, Habit
+from .models import Entry, Habit, HabitStatus
 from .serializers import (
     CreateUserSerializer,
     EntrySerializer,
@@ -68,7 +72,19 @@ class WhoAmIView(APIView):
                 description="Filter habits by the author's user ID.",
                 required=False,
                 type=str,
-            )
+            ),
+            OpenApiParameter(
+                name="status",
+                description="Filter by status",
+                required=False,
+                type=HabitStatus,
+            ),
+            OpenApiParameter(
+                name="ongoing",
+                description="Include only ongoing habits. Defaults to 1 (true).",
+                required=False,
+                type=Literal["0", "1"],
+            ),
         ],
         description="Retrieve a list of habits.",
     ),
@@ -85,7 +101,21 @@ class HabitListCreate(ListCreateAPIView):
             return Habit.objects.all()
         query: HabitListQuery = self.request.GET
         author = query.get("userId")
-        return Habit.objects.filter(author=author)
+        status = query.get("status")
+
+        habits = Habit.objects.filter(author=author).filter(status=status)
+
+        if self.request.user.id != author:
+            habits = habits.filter(private=False)
+
+        ongoing_only = query.get("ongoing") == "1"
+        if ongoing_only:
+            now = datetime.now()
+            habits = habits.filter(
+                Q(goalFrom__isnull=True) | Q(goalFrom__gte=now)
+            ).filter(Q(goalTo__isnull=True) | Q(goalTo__lte=now))
+
+        return habits
 
 
 class HabitDetail(APIView):
@@ -165,10 +195,12 @@ class EntryListCreate(ListCreateAPIView):
         end = datetime.fromisoformat(end) if end else datetime.now()
 
         start = query.get("timeStart")
-        start = datetime.fromisoformat(start) if start else (end - timedelta(days=7))
+        start = datetime.fromisoformat(start) if start else days_ago(7)
 
-        return Entry.objects.filter(habit=habitId).filter(
-            date__date__range=(start, end)
+        return (
+            Entry.objects.filter(habit=habitId)
+            .filter(date__date__range=(start, end))
+            .order_by("-date")
         )
 
 

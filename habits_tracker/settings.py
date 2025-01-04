@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -34,14 +35,8 @@ SECRET_KEY = secret_key
 DEBUG = ENVIRONMENT == "development"
 
 # List of all the host/domain names our Django project can serve
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "habit-tracker-be-production.up.railway.app"
-]
-CSRF_TRUSTED_ORIGINS = [
-    "https://habit-tracker-be-production.up.railway.app"
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "habit-tracker-be-production.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://habit-tracker-be-production.up.railway.app"]
 
 # Rest framework
 
@@ -122,7 +117,6 @@ WSGI_APPLICATION = "habits_tracker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-import dj_database_url
 
 db_url = os.environ.get("DATABASE_URL")
 

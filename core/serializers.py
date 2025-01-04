@@ -32,10 +32,23 @@ class HabitSerializer(serializers.ModelSerializer):
             "description",
             "private",
             "status",
-            "goalFrequency",
-            "goalTimespan",
+            "goal",
             "goalType",
+            "goalTimespan",
+            "goalFrom",
+            "goalTo",
         ]
+
+    def validate(self, data: dict):
+        goalFrom = data.get("goalFrom")
+        goalTo = data.get("goalTo")
+
+        if goalFrom and goalTo and goalFrom >= goalTo:
+            raise serializers.ValidationError(
+                {"goalTo": "finish must occur after start"}
+            )
+
+        return data
 
 
 class EntrySerializer(serializers.ModelSerializer):

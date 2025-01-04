@@ -320,6 +320,9 @@ paths:
           description: No response body
 components:
   schemas:
+    BlankEnum:
+      enum:
+      - ''
     CreateUser:
       type: object
       properties:
@@ -351,7 +354,6 @@ components:
         date:
           type: string
           format: date-time
-          readOnly: true
         rating:
           type: integer
           maximum: 10
@@ -396,25 +398,37 @@ components:
           type: boolean
         status:
           $ref: '#/components/schemas/StatusEnum'
-        goalFrequency:
+        goal:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        goalType:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GoalTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
         goalTimespan:
           type: integer
-          maximum: 9223372036854775807
+          maximum: 2147483647
           minimum: 0
-          format: int64
-        goalType:
-          $ref: '#/components/schemas/GoalTypeEnum'
+          nullable: true
+        goalFrom:
+          type: string
+          format: date-time
+          nullable: true
+        goalTo:
+          type: string
+          format: date-time
+          nullable: true
       required:
       - author
-      - goalFrequency
-      - goalTimespan
-      - goalType
       - id
       - name
+    NullEnum:
+      enum:
+      - null
     PaginatedEntryList:
       type: object
       required:
@@ -463,14 +477,14 @@ components:
             $ref: '#/components/schemas/Habit'
     StatusEnum:
       enum:
-      - active
-      - paused
-      - deleted
+      - '0'
+      - '1'
+      - '2'
       type: string
       description: |-
-        * `active` - Active
-        * `paused` - Paused
-        * `deleted` - Deleted
+        * `0` - Active
+        * `1` - Paused
+        * `2` - Deleted
     TokenObtainPair:
       type: object
       properties:

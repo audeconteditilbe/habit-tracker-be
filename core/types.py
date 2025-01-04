@@ -1,8 +1,12 @@
-from typing import Optional, TypedDict
+from typing import Literal, Optional, TypedDict
+
+from core.models import HabitStatus
 
 
 class HabitListQuery(TypedDict):
     userId: Optional[str]
+    status: Optional[HabitStatus]
+    ongoing: Optional[Literal["0", "1"]]
 
 
 class EntryListQuery(TypedDict):

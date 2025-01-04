@@ -27,10 +27,12 @@ type Habit {
   description: String
   private: Boolean!
   status: Status!
-  goalFrequency: Int!
-  goalTimespan: Int!
-  goalType: GoalType!
-  entries(span: Int): [Entry!]!
+  goal: Int
+  goalTimespan: Int
+  goalType: GoalType
+  goalFrom: String
+  goalTo: String
+  entries(days: Int): [Entry!]!
 }
 
 type Query {
