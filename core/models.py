@@ -15,11 +15,11 @@ class Habit(models.Model):
         ordering = ["private", "status", "goalFrom", "goalTimespan"]
 
     GOAL_TYPE_CHOICES = [
-        ("gt", "Greater than"),
-        ("gte", "Greater than or equal to"),
-        ("lt", "Less than"),
-        ("lte", "Less than or equal to"),
-        ("equal", "Equal to"),
+        ("GT", "Greater than"),
+        ("GTE", "Greater than or equal to"),
+        ("LT", "Less than"),
+        ("LTE", "Less than or equal to"),
+        ("EQUAL", "Equal to"),
     ]
 
     STATUS_CHOICES = [

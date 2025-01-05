@@ -5,11 +5,11 @@ enum Status {
 }
 
 enum GoalType {
-  gt
-  gte
-  lt
-  lte
-  equal
+  GT
+  GTE
+  LT
+  LTE
+  EQUAL
 }
 
 type Entry {
