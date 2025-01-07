@@ -1,15 +1,17 @@
 from datetime import datetime
-from typing import Literal
 
 from django.http import Http404
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from rest_framework.generics import CreateAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 
 from graphene_django.views import GraphQLView
@@ -77,13 +79,19 @@ class WhoAmIView(APIView):
                 name="status",
                 description="Filter by status",
                 required=False,
-                type=HabitStatus,
+                type=str,
+                enum=(
+                    HabitStatus.ACTIVE.value,
+                    HabitStatus.PAUSED.value,
+                    HabitStatus.DELETED.value,
+                ),
             ),
             OpenApiParameter(
                 name="ongoing",
                 description="Include only ongoing habits. Defaults to 1 (true).",
                 required=False,
-                type=Literal["0", "1"],
+                type=str,
+                enum=("0", "1"),
             ),
         ],
         description="Retrieve a list of habits.",
@@ -118,32 +126,21 @@ class HabitListCreate(ListCreateAPIView):
         return habits
 
 
-class HabitDetail(APIView):
+class HabitDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self, request, pk):
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
         try:
-            return Habit.objects.filter(author=request.user).get(pk=pk)
+            habit = Habit.objects.get(pk=pk)
+            print(habit.author != self.request.user.id and habit.private)
+            if habit.author != self.request.user.id and habit.private:
+                raise Http404
+
+            return Response(HabitSerializer(habit).data)
         except Habit.DoesNotExist:
             raise Http404
-
-    def get(self, request, pk, format=None):
-        habit = self.get_object(request, pk)
-        serializer = HabitSerializer(habit)
-        return Response(serializer.data)
-
-    def patch(self, request, pk, format=None):
-        habit = self.get_object(request, pk)
-        serializer = HabitSerializer(habit, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        habit = self.get_object(request, pk)
-        habit.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @extend_schema_view(
@@ -204,38 +201,24 @@ class EntryListCreate(ListCreateAPIView):
         )
 
 
-class EntryDetail(APIView):
+class EntryDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self, pk):
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
         try:
-            return Entry.objects.get(pk=pk)
+            return Response(EntrySerializer(Entry.objects.get(pk=pk)).data)
         except Entry.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
-        entry = self.get_object(pk)
-        serializer = EntrySerializer(entry)
-        return Response(serializer.data)
 
-    def patch(self, request, pk, format=None):
-        entry = self.get_object(pk)
-        serializer = EntrySerializer(entry, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        entry = self.get_object(pk)
-        entry.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# Wrapper for GraphQLView to enforce authentication
-# through recycling of DRF simple JWT auth
-# https://github.com/graphql-python/graphene/issues/249
 def summary_view():
+    """
+    Wrapper for GraphQLView to enforce authentication
+    through recycling of DRF simple JWT auth
+    https://github.com/graphql-python/graphene/issues/249
+    """
     view = GraphQLView.as_view()
     view = permission_classes((IsAuthenticated,))(view)
     # view = authentication_classes((TokenAuthentication,))(view)

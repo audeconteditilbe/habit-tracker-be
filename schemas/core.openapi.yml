@@ -85,7 +85,42 @@ paths:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
+    put:
+      operationId: entries_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - entries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Habit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Habit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Habit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
     patch:
       operationId: entries_partial_update
       parameters:
@@ -96,11 +131,26 @@ paths:
         required: true
       tags:
       - entries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
     delete:
       operationId: entries_destroy
       parameters:
@@ -121,12 +171,29 @@ paths:
       operationId: habits_list
       description: Retrieve a list of habits.
       parameters:
+      - in: query
+        name: ongoing
+        schema:
+          type: string
+          enum:
+          - '0'
+          - '1'
+        description: Include only ongoing habits. Defaults to 1 (true).
       - name: page
         required: false
         in: query
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - '0'
+          - '1'
+          - '2'
+        description: Filter by status
       - in: query
         name: userId
         schema:
@@ -169,7 +236,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Habit'
           description: ''
-  /api/habits/{id}/:
+  /api/habits/{id}:
     get:
       operationId: habits_retrieve
       parameters:
@@ -184,7 +251,42 @@ paths:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
+    put:
+      operationId: habits_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - habits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Habit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Habit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Habit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
     patch:
       operationId: habits_partial_update
       parameters:
@@ -195,11 +297,26 @@ paths:
         required: true
       tags:
       - habits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHabit'
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+          description: ''
     delete:
       operationId: habits_destroy
       parameters:
@@ -475,6 +592,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Habit'
+    PatchedHabit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        private:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        goal:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        goalType:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GoalTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        goalTimespan:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        goalFrom:
+          type: string
+          format: date-time
+          nullable: true
+        goalTo:
+          type: string
+          format: date-time
+          nullable: true
     StatusEnum:
       enum:
       - '0'

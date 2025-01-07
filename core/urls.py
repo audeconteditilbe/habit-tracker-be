@@ -11,7 +11,7 @@ from .views import (
 
 urlpatterns = [
     path("habits", HabitListCreate.as_view(), name="habits"),
-    path("habits/<int:pk>/", HabitDetail.as_view(), name="habit-detail"),
+    path("habits/<int:pk>", HabitDetail.as_view(), name="habit-detail"),
     path("entries", EntryListCreate.as_view(), name="entries"),
     path("entries/<int:pk>", EntryDetail.as_view(), name="entry-detail"),
     path("gql/summary", summary_view()),

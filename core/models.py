@@ -5,9 +5,9 @@ from graphene import Enum
 
 
 class HabitStatus(Enum):
-    ACTIVE = '0'
-    PAUSED = '1'
-    DELETED = '2'
+    ACTIVE = "0"
+    PAUSED = "1"
+    DELETED = "2"
 
 
 class Habit(models.Model):
