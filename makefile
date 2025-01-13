@@ -1,6 +1,6 @@
-start-db:
+up:
 	docker compose up -d --build
-stop-db:
+down:
 	docker compose down
 dev:
 	poetry run python manage.py runserver

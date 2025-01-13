@@ -18,8 +18,6 @@ from graphene_django.views import GraphQLView
 
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
-from core.utils import days_ago
-
 from .types import EntryListQuery, HabitListQuery
 from .models import Entry, Habit, HabitStatus
 from .serializers import (
@@ -189,16 +187,32 @@ class EntryListCreate(ListCreateAPIView):
             raise Http404
 
         end = query.get("timeEnd")
-        end = datetime.fromisoformat(end) if end else datetime.now()
-
         start = query.get("timeStart")
-        start = datetime.fromisoformat(start) if start else days_ago(7)
 
-        return (
-            Entry.objects.filter(habit=habitId)
-            .filter(date__date__range=(start, end))
-            .order_by("-date")
-        )
+        if end and start:
+            start = datetime.fromisoformat(start)
+            end = datetime.fromisoformat(end)
+            return (
+                Entry.objects.filter(habit=habitId)
+                .filter(date__date__range=(start, end))
+                .order_by("-date")
+            )
+        if start:
+            start = datetime.fromisoformat(start)
+            return (
+                Entry.objects.filter(habit=habitId)
+                .filter(date__date__gt=start)
+                .order_by("-date")
+            )
+        if end:
+            end = datetime.fromisoformat(end)
+            return (
+                Entry.objects.filter(habit=habitId)
+                .filter(date__date__lt=end)
+                .order_by("-date")
+            )
+
+        return Entry.objects.filter(habit=habitId).order_by("-date")
 
 
 class EntryDetail(RetrieveUpdateDestroyAPIView):
